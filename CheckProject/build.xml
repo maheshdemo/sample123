@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="usage" name="RMS_CARRERS_AUTOMATION">
+    <property environment="env"/>
+    <property name="Eclipse-WorkSpace." value="${basedir}"/>
+    <property name="jars for graphs" value="${Eclipse-WorkSpace.}/libs"/>
+    <property name="test.dest" value="${Eclipse-WorkSpace.}/build"/>
+    <property name="test.src" value="${Eclipse-WorkSpace.}/src"/>
+    <property name="ng.result" value="test-output"/>
+   <target name="setClassPath" unless="test.classpath">
+   	<path id="classpath_jars">
+   		<fileset dir="${jars for graphs}" includes="*.jar"/>
+   		</path>
+   <pathconvert pathsep=";" property="test.classpath" refid="classpath_jars"/>
+   </target>
+	
+	<target name="init" depends="setClassPath">
+		<tstamp>
+			<format property="start.time" pattern="mm/dd/yyyy hh:mm:ss"/>
+		</tstamp>
+				<condition property="ANT" value="S{env,ANT_HOME}/bin/ant.bat"
+											else="S{env.ANT_HOME}/bin/ant">
+													<os family="windows"/>
+					</condition>
+		<taskdef name="testng" classpath="${Eclipse-WorkSpace.}/libs/testng-6.8.5.jar" classname="org.testng.TestNGAntTask"/>
+		</target>
+	<!--all-->
+	<target name="all">
+		</target>
+	
+		<!--clean-->
+		<target name="clean">
+			<delete dir="${test.dest}"/>
+			</target>
+				<!--compile-->
+<target name="compile" depends="init,clean">
+	<delete includeemptydirs="true" quiet="true">
+		<fileset dir="${test.dest}"/>
+		</delete>
+	<echo message="making directory"/>
+	<mkdir dir="${test.dest}"/>
+<echo message="${test.classpath}"/>
+	<echo message="compiling"/>
+	<javac debug="true" destdir="${test.dest}" srcdir="${test.src}" target="1.8" classpath="${test.classpath}"/>
+	</target>
+	<!--build-->
+	<target name="build" depends="init"/>
+	<!--run-->
+	<target name="run" depends="compile">
+	<testng classpath="${test.classpath} : ${test.dest}" suitename="Suite1">
+		<xmlfileset dir="${Eclipse-WorkSpace.}" includes="TestNG.xml"/>
+		</testng>
+	</target>
+		<target name="usage">
+			<echo>ant run will execute the test</echo>
+			</target>
+	<path id="classpath_jars">
+		<fileset dir="${jars for graphs}" includes="*.jar"/>
+	</path>
+</project>
